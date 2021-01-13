@@ -1,10 +1,10 @@
 FROM alpine:3.8
 
-RUN apk add python3
+RUN apk add python3 && rm -rf /var/cache/apk/* && rm -rf /tmp/*
 RUN apk add --update logrotate && rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
 # Install and configure s3cmd
-RUN python3 -m pip install s3cmd
+RUN python3 -m pip install --no-cache-dir s3cmd
 COPY .s3cfg /root/.s3cfg
 
 # Configure cronjobs and logrotate
