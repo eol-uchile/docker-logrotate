@@ -1,16 +1,17 @@
-FROM alpine:3.8
+# Image is ~ 30 MB
+FROM ubuntu:20.04
 
-RUN apk add python3 && rm -rf /var/cache/apk/* && rm -rf /tmp/*
-RUN apk add --update logrotate && rm -rf /var/cache/apk/* && rm -rf /tmp/*
+# Python takes 37 MB
+RUN apt update && apt install -y s3cmd && apt install -y logrotate
 
-# Install and configure s3cmd
-RUN python3 -m pip install --no-cache-dir s3cmd
 COPY .s3cfg /root/.s3cfg
 
 # Configure cronjobs and logrotate
-RUN echo "*/5 *	* * *	/usr/sbin/logrotate /etc/logrotate.conf" >> /etc/crontabs/root
+#RUN echo "*/5 *	* * *	/usr/sbin/logrotate /etc/logrotate.conf" >> /etc/crontabs/root
+RUN echo "*/5 *	* * * root /usr/sbin/logrotate -v /etc/logrotate.conf > /proc/1/fd/1 2>/proc/1/fd/2" >> /etc/crontab
 
-COPY logrotate.conf /etc/logrotate.conf
+#COPY logrotate.conf /etc/logrotate.conf
 RUN chmod 400 /etc/logrotate.conf
 
-CMD ["crond", "-f"]
+# CMD ["crond", "-f"]
+CMD ["cron", "-f"]
