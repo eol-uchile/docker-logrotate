@@ -3,6 +3,7 @@ FROM ubuntu:20.04
 RUN apt update && apt install -y \
   s3cmd \
   logrotate \
+  ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
 COPY .s3cfg /root/.s3cfg
