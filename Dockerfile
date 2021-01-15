@@ -1,8 +1,9 @@
-# Image is ~ 30 MB
 FROM ubuntu:20.04
 
-# Python takes 37 MB
-RUN apt update && apt install -y s3cmd && apt install -y logrotate
+RUN apt update && apt install -y \
+  s3cmd \
+  logrotate \
+  && rm -rf /var/lib/apt/lists/*
 
 COPY .s3cfg /root/.s3cfg
 
