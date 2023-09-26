@@ -10,7 +10,8 @@ RUN apt update && apt install -y \
 COPY rclone.conf /root/.config/rclone/rclone.conf
 
 # Configure cronjobs and logrotate for hourly frequency
-RUN cp /etc/cron.daily/logrotate /etc/cron.hourly/logrotate
+RUN mv /etc/cron.daily/logrotate /etc/cron.hourly/logrotate
+RUN sed -i 's#^/usr/sbin/logrotate#/usr/sbin/logrotate --log /proc/1/fd/1#' /etc/cron.hourly/logrotate
 
 COPY logrotate.conf /etc/logrotate.d/tracking
 RUN chmod 400 /etc/logrotate.d/tracking
