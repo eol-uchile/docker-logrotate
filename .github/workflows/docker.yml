@@ -7,15 +7,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
 
       - name: Build docker image
-        run: docker build . --tag eoluchile/docker-logrotate:${GITHUB_SHA}
+        run: docker build . --tag eol-uchile/docker-logrotate:${GITHUB_SHA}
 
-      - name: Push
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: eolito
+          password: ${{ secrets.CR_PAT }}
+
+      - name: Push to Github Container Registry
         run: |
-          echo "${DOCKERHUB_PASSWORD}" | docker login --username ${DOCKERHUB_USER} --password-stdin
-          docker push eoluchile/docker-logrotate:${GITHUB_SHA}
-        env:
-          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+          docker push ghcr.io/eol-uchile/docker-logrotate:${GITHUB_SHA}

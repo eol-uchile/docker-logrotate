@@ -1,5 +1,6 @@
-FROM ubuntu:20.04
+FROM ubuntu:latest
 
+ENV DEBIAN_FRONTEND "noninteractive"
 RUN apt update && apt install -y \
   rclone \
   logrotate \
@@ -8,10 +9,10 @@ RUN apt update && apt install -y \
 
 COPY rclone.conf /root/.config/rclone/rclone.conf
 
-# Configure cronjobs and logrotate
-RUN echo "*/5 *	* * * root /usr/sbin/logrotate -v /etc/logrotate.conf > /proc/1/fd/1 2>/proc/1/fd/2" >> /etc/crontab
+# Configure cronjobs and logrotate for hourly frequency
+RUN cp /etc/cron.daily/logrotate /etc/cron.hourly/logrotate
 
-COPY logrotate.conf /etc/logrotate.conf
-RUN chmod 400 /etc/logrotate.conf
+COPY logrotate.conf /etc/logrotate.d/tracking
+RUN chmod 400 /etc/logrotate.d/tracking
 
 CMD ["cron", "-f"]
