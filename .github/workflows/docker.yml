@@ -1,6 +1,9 @@
 name: Docker Image CI
 
-on: [push]
+on:
+  push:
+    path:
+      - 'Dockerfile'
 
 jobs:
   build:
@@ -15,6 +18,7 @@ jobs:
         run: docker build . --tag ghcr.io/eol-uchile/docker-logrotate:${GITHUB_SHA}
 
       - name: Login to GitHub Container Registry
+        if: github.ref == 'refs/heads/master'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -22,5 +26,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push to Github Container Registry
+        if: github.ref == 'refs/heads/master'
         run: |
           docker push ghcr.io/eol-uchile/docker-logrotate:${GITHUB_SHA}
